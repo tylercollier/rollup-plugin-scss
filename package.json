@@ -16,7 +16,8 @@
     "test:postcss": "cd test/postcss && rm -f output.* && rollup -c && cmp output.js ../expected.js && cmp output.css expected.css && cd ../..",
     "test:processor": "cd test/processor && rm -f output.* && rollup -c && cmp output.js ../expected.js && cmp output.css expected.css && cd ../..",
     "test:sourcemap": "cd test/sourcemap && rm -f output.* && rollup -c && cmp output.js ../expected.js && cmp nested/output.css expected.css && cmp nested/output.css.map expected.css.map && cd ../..",
-    "test": "npm run test:node-sass && npm run test:sass && npm run test:processor && npm run test:postcss && npm run test:sourcemap && npm run test:insert",
+    "test:import-resolution": "cd test/import-resolution && node setup.js && rm -f output.* && rollup -c && node teardown.js && cmp output.js expected.js && cmp output.css expected.css && cd ../..",
+    "test": "npm run test:node-sass && npm run test:sass && npm run test:processor && npm run test:postcss && npm run test:sourcemap && npm run test:insert && npm run test:import-resolution",
     "testw": "cd test/node-sass && rm -f output.* && rollup -cw; cd ..",
     "prepare": "rollup -c"
   },

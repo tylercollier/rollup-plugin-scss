@@ -135,9 +135,46 @@ export default function scss(options: CSSPluginOptions = {}): Plugin {
                  * The paths property tells `require.resolve()` where to begin
                  * resolution (i.e. who is requesting the file). */
                 try {
-                  const resolved = require.resolve(cleanUrl, {
+                  let resolved = require.resolve(cleanUrl, {
                     paths: [prefix + scss]
                   })
+
+                  const allowedExtensions: string[] = ['.css', '.scss', '.sass'];
+
+                  const resolvedHasAllowedExtension = allowedExtensions.some((allowedExtension: string) => {
+                    return resolved.endsWith(allowedExtension)
+                  });
+
+                  /* It is possible that the `resolved` value is unintentionally
+                   * a path to an unintended file which shares the same name
+                   * but has a different file extension. */
+                  if (!resolvedHasAllowedExtension) {
+                    for (const [index, allowedExtension] of allowedExtensions.entries()) {
+                      try {
+                        /* Make an additional attempt to resolve the path by
+                         * specifying the file extension. */
+                        resolved = require.resolve(cleanUrl + allowedExtension, {
+                          paths: [prefix + scss]
+                        })
+
+                        /* For the first file extension that allows the path to
+                         * be reolved, break out of the loop. */
+                        break
+                      /* If not the path could not be resolved with the
+                       * file extension. */
+                      } catch (e) {
+                        if (index < allowedExtensions.length - 1) {
+                          /* If not the final iteration then proceed
+                           *  to the next. */
+                          continue
+                        } else {
+                          /* If the final iteration then re-throw the error
+                           *  onto the next catch. */
+                          throw e
+                        }
+                      }
+                    }
+                  }
 
                   /* Since `require.resolve()` will throw an error if a file
                    * doesn't exist. It's safe to assume the file exists and

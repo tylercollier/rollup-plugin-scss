@@ -1,0 +1,10 @@
+@import 'import-resolution-test/main';
+
+.rollup {
+  .plugin {
+    .scss {
+      color: green;
+      user-select: none;
+    }
+  }
+}
